@@ -4,33 +4,50 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
 export function ThemeToggle() {
-  // Lee el tema guardado al inicializar el estado del componente cliente.
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === "undefined") {
-      return "dark";
-    }
-
-    return localStorage.getItem("vanlife-theme") || "dark";
-  });
+  const [theme, setTheme] = useState("dark");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Sincroniza el atributo del html cada vez que cambia el estado de tema.
+    // Marca que el componente ya está montado en el cliente
+    setMounted(true);
+
+    // Lee el tema guardado
+    const saved = localStorage.getItem("vanlife-theme") || "dark";
+    setTheme(saved);
+
+    // Aplica el tema al html
+    document.documentElement.dataset.theme = saved;
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     document.documentElement.dataset.theme = theme;
-  }, [theme]);
+    localStorage.setItem("vanlife-theme", theme);
+  }, [theme, mounted]);
 
   function toggleTheme() {
-    // Alterna el tema, lo aplica al html y lo persiste para futuras visitas.
-    const nextTheme = theme === "light" ? "dark" : "light";
-    localStorage.setItem("vanlife-theme", nextTheme);
-    setTheme(nextTheme);
+    setTheme(theme === "light" ? "dark" : "light");
+  }
+
+  // Evita renderizar iconos antes de montar → evita hydration mismatch
+  if (!mounted) {
+    return (
+      <button
+        aria-label="Cambiar tema"
+        className="icon-button"
+        type="button"
+      >
+        {/* placeholder sin icono */}
+      </button>
+    );
   }
 
   return (
     <button
-      aria-label="Canviar tema"
+      aria-label="Cambiar tema"
       className="icon-button"
       onClick={toggleTheme}
-      title="Canviar tema"
+      title="Cambiar tema"
       type="button"
     >
       {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
