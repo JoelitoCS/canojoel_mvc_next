@@ -4,7 +4,7 @@ Projecte Next.js 16 amb App Router, PostgreSQL, Prisma i Auth.js. Inclou landing
 
 ## Posada en marxa
 
-1. Configura PostgreSQL/Supabase i revisa `DATABASE_URL` a `.env`. Les variables `NEXT_PUBLIC_SUPABASE_URL` i `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` no substitueixen `DATABASE_URL`; Prisma necessita la connection string PostgreSQL.
+1. Configura PostgreSQL/Supabase i revisa `DATABASE_URL` i `DIRECT_URL` a `.env`. Les variables `NEXT_PUBLIC_SUPABASE_URL` i `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` no substitueixen `DATABASE_URL`; Prisma necessita la connection string PostgreSQL.
 2. Genera Prisma:
 
 ```bash
