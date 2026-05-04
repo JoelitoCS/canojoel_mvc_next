@@ -5,10 +5,12 @@ import { createModel } from "@/app/actions";
 import { ActionMessage } from "@/components/ActionMessage";
 
 export function ModelForm() {
+  // createModel valida permisos y guarda la camper desde el servidor.
   const [state, formAction, pending] = useActionState(createModel, null);
 
   return (
     <form action={formAction} className="admin-form">
+      {/* Datos basicos de identificacion del modelo. */}
       <div className="form-grid">
         <label>
           Nom
@@ -20,6 +22,7 @@ export function ModelForm() {
         </label>
       </div>
       <label>
+        {/* El slug sera la URL publica /models/[slug]. */}
         Slug
         <input name="slug" placeholder="mercedes-marco-polo" required />
       </label>
@@ -32,6 +35,7 @@ export function ModelForm() {
         <textarea name="description" rows="4" required />
       </label>
       <div className="form-grid">
+        {/* Numeros principales que se muestran en tarjetas y ficha. */}
         <label>
           Places
           <input name="seats" type="number" min="1" defaultValue="4" required />
@@ -50,12 +54,15 @@ export function ModelForm() {
         <input name="imageUrl" type="url" placeholder="https://..." required />
       </label>
       <label>
+        {/* Las caracteristicas se escriben separadas por comas y se guardan como array. */}
         Caracteristiques
         <input name="features" placeholder="Cuina, Ducha, GPS" required />
       </label>
       <button className="primary-button" type="submit" disabled={pending}>
+        {/* Mientras pending=true evitamos crear el mismo modelo dos veces. */}
         {pending ? "Guardant..." : "Afegir model"}
       </button>
+      {/* Respuesta de validacion/permisos devuelta por createModel. */}
       <ActionMessage state={state} />
     </form>
   );

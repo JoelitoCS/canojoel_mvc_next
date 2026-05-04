@@ -3,9 +3,11 @@ import { ModelForm } from "@/components/ModelForm";
 import { getAdminData } from "@/lib/data";
 import { auth } from "../../../auth";
 
+// La administracion siempre debe leer datos frescos de la base de datos.
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
+  // Lee la sesion para comprobar permisos antes de mostrar datos internos.
   const session = await auth();
 
   // Control de acceso por rol: solo EDITOR y ADMIN entran en la zona de gestion.
@@ -13,6 +15,7 @@ export default async function AdminPage() {
     redirect("/login");
   }
 
+  // Carga modelos y solicitudes desde Prisma para el panel.
   const { models, requests } = await getAdminData();
 
   return (
@@ -29,12 +32,14 @@ export default async function AdminPage() {
       <section className="admin-grid">
         <div className="panel">
           <h2>Afegir model camper</h2>
+          {/* Formulario protegido que crea CamperModel en PostgreSQL. */}
           <ModelForm />
         </div>
 
         <div className="panel">
           <h2>Models persistits</h2>
           <div className="admin-list">
+            {/* Lista de modelos existentes para comprobar que la persistencia funciona. */}
             {models.map((model) => (
               <article key={model.id}>
                 <strong>{model.name}</strong>
@@ -47,6 +52,7 @@ export default async function AdminPage() {
         <div className="panel requests-panel">
           <h2>Sol-licituds d&apos;informacio</h2>
           <div className="admin-list">
+            {/* Solicitudes enviadas desde el formulario publico de contacto. */}
             {requests.length ? (
               requests.map((request) => (
                 <article key={request.id}>

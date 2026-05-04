@@ -5,9 +5,11 @@ import { auth } from "../../../../auth";
 import { CommentForm } from "@/components/CommentForm";
 import { getModelBySlug } from "@/lib/data";
 
+// La ficha debe ser dinamica porque depende del slug y de comentarios actuales.
 export const dynamic = "force-dynamic";
 
 function Stars({ rating }) {
+  // Renderiza estrellas visuales a partir del rating guardado en la base de datos.
   return (
     <span className="stars">
       {Array.from({ length: rating }).map((_, index) => (
@@ -18,16 +20,20 @@ function Stars({ rating }) {
 }
 
 export default async function ModelDetailPage({ params }) {
+  // En Next 16 params es una Promise en paginas dinamicas.
   const { slug } = await params;
+  // Carga en paralelo el modelo y la sesion para reducir tiempo de espera.
   const [model, session] = await Promise.all([getModelBySlug(slug), auth()]);
 
   if (!model) {
+    // Si no existe el slug, Next renderiza la pagina 404.
     notFound();
   }
 
   return (
     <main className="detail-page">
       <section className="detail-hero">
+        {/* Imagen y resumen principal de la camper. */}
         <img src={model.imageUrl} alt={model.name} />
         <div>
           <Link href="/" className="back-link">Tornar al cataleg</Link>
@@ -47,6 +53,7 @@ export default async function ModelDetailPage({ params }) {
         <div className="panel">
           <h2>Caracteristiques</h2>
           <ul className="feature-list">
+            {/* Caracteristicas persistidas como array en PostgreSQL. */}
             {model.features.map((feature) => (
               <li key={feature}>{feature}</li>
             ))}
@@ -55,6 +62,7 @@ export default async function ModelDetailPage({ params }) {
 
         <div className="panel">
           <h2>Comentaris</h2>
+          {/* Los visitantes pueden leer todos los comentarios. */}
           {model.comments?.length ? (
             model.comments.map((comment) => (
               <article className="comment" key={comment.id}>
@@ -67,6 +75,7 @@ export default async function ModelDetailPage({ params }) {
             <p className="muted">Encara no hi ha comentaris per aquest model.</p>
           )}
 
+          {/* Solo los usuarios autenticados ven el formulario para publicar. */}
           {session?.user ? (
             <CommentForm model={model} />
           ) : (

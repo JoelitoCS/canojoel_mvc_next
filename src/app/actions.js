@@ -7,6 +7,7 @@ import { z } from "zod";
 import { auth, signIn } from "../../auth";
 import { prisma } from "@/lib/prisma";
 
+// Valida los comentarios antes de guardarlos: modelo, slug, rating y texto.
 const commentSchema = z.object({
   modelId: z.string().min(1),
   slug: z.string().min(1),
@@ -14,6 +15,7 @@ const commentSchema = z.object({
   content: z.string().trim().min(10, "Escribe al menos 10 caracteres."),
 });
 
+// Valida el formulario publico de contacto/reserva.
 const requestSchema = z.object({
   fullName: z.string().trim().min(2),
   email: z.string().trim().email(),
@@ -24,6 +26,7 @@ const requestSchema = z.object({
   message: z.string().trim().min(15),
 });
 
+// Valida el formulario interno para crear nuevos modelos camper desde /admin.
 const modelSchema = z.object({
   name: z.string().trim().min(3),
   brand: z.string().trim().min(2),
@@ -44,10 +47,12 @@ function parseDate(value) {
 }
 
 function requireBackofficeRole(session) {
+  // Centraliza el permiso de backoffice para no repetir la lista de roles.
   return ["EDITOR", "ADMIN"].includes(session?.user?.role);
 }
 
 export async function loginAction(_previousState, formData) {
+  // Extrae los campos del formulario de login recibido desde el Client Component.
   const email = String(formData.get("email") || "");
   const password = String(formData.get("password") || "");
 
@@ -65,18 +70,21 @@ export async function loginAction(_previousState, formData) {
 }
 
 export async function createComment(_previousState, formData) {
+  // auth() lee la sesion en servidor; sin usuario no se permite publicar.
   const session = await auth();
 
   if (!session?.user?.id) {
     return { ok: false, message: "Inicia sesion para publicar comentarios." };
   }
 
+  // Object.fromEntries transforma FormData en objeto para que Zod pueda validarlo.
   const parsed = commentSchema.safeParse(Object.fromEntries(formData));
 
   if (!parsed.success) {
     return { ok: false, message: parsed.error.issues[0].message };
   }
 
+  // Persistencia del comentario asociado al modelo y al usuario autenticado.
   await prisma.comment.create({
     data: {
       modelId: parsed.data.modelId,
@@ -86,12 +94,14 @@ export async function createComment(_previousState, formData) {
     },
   });
 
+  // Revalida la landing y la ficha para mostrar el comentario nuevo.
   revalidatePath("/");
   revalidatePath(`/models/${parsed.data.slug}`);
   return { ok: true, message: "Comentario publicado. Gracias por compartir tu ruta." };
 }
 
 export async function submitInfoRequest(_previousState, formData) {
+  // Valida datos del formulario publico antes de tocar la base de datos.
   const parsed = requestSchema.safeParse(Object.fromEntries(formData));
 
   if (!parsed.success) {
@@ -101,6 +111,7 @@ export async function submitInfoRequest(_previousState, formData) {
     };
   }
 
+  // Guarda la solicitud de informacion para que se vea despues en /admin.
   await prisma.infoRequest.create({
     data: {
       fullName: parsed.data.fullName,
@@ -113,23 +124,27 @@ export async function submitInfoRequest(_previousState, formData) {
     },
   });
 
+  // Actualiza el panel de administracion despues de guardar la solicitud.
   revalidatePath("/admin");
   return { ok: true, message: "Solicitud recibida. Te contactaremos muy pronto." };
 }
 
 export async function createModel(_previousState, formData) {
+  // El alta de modelos solo puede ejecutarla un usuario con rol EDITOR o ADMIN.
   const session = await auth();
 
   if (!requireBackofficeRole(session)) {
     return { ok: false, message: "No tienes permisos para gestionar modelos." };
   }
 
+  // Validacion estricta del modelo: slug limpio, numeros y URL de imagen.
   const parsed = modelSchema.safeParse(Object.fromEntries(formData));
 
   if (!parsed.success) {
     return { ok: false, message: parsed.error.issues[0].message };
   }
 
+  // Convierte el input de caracteristicas separado por comas en array PostgreSQL.
   await prisma.camperModel.create({
     data: {
       ...parsed.data,
@@ -141,6 +156,7 @@ export async function createModel(_previousState, formData) {
     },
   });
 
+  // Revalida las paginas que muestran el catalogo y vuelve al panel.
   revalidatePath("/");
   revalidatePath("/admin");
   redirect("/admin");

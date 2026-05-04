@@ -5,10 +5,12 @@ import { createComment } from "@/app/actions";
 import { ActionMessage } from "@/components/ActionMessage";
 
 export function CommentForm({ model }) {
+  // useActionState conecta el formulario cliente con la Server Action createComment.
   const [state, formAction, pending] = useActionState(createComment, null);
 
   return (
     <form action={formAction} className="comment-form">
+      {/* Campos ocultos necesarios para asociar el comentario al modelo correcto. */}
       <input type="hidden" name="modelId" value={model.id} />
       <input type="hidden" name="slug" value={model.slug} />
       <label>
@@ -31,8 +33,10 @@ export function CommentForm({ model }) {
         />
       </label>
       <button className="primary-button" type="submit" disabled={pending}>
+        {/* pending evita dobles envios mientras la accion esta en marcha. */}
         {pending ? "Publicando..." : "Publicar comentario"}
       </button>
+      {/* Mensaje de exito o error devuelto por la Server Action. */}
       <ActionMessage state={state} />
     </form>
   );

@@ -1,13 +1,16 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 
+// Cliente Prisma usado solo por el script de seed.
 const prisma = new PrismaClient();
 
 async function main() {
   // La semilla deja usuarios de prueba y modelos iniciales persistidos en PostgreSQL.
   // upsert evita duplicados cuando el seed se ejecuta mas de una vez.
+  // La contrasena se hashea una vez y se reutiliza para los tres usuarios demo.
   const password = await bcrypt.hash("Password123!", 10);
 
+  // Usuario administrador con permisos completos.
   const admin = await prisma.user.upsert({
     where: { email: "admin@vanlife.test" },
     update: {},
@@ -19,6 +22,7 @@ async function main() {
     },
   });
 
+  // Usuario editor para probar el acceso a la gestion sin ser ADMIN.
   const editor = await prisma.user.upsert({
     where: { email: "editor@vanlife.test" },
     update: {},
@@ -30,6 +34,7 @@ async function main() {
     },
   });
 
+  // Usuario cliente normal, pensado para probar la publicacion de comentarios.
   const user = await prisma.user.upsert({
     where: { email: "client@vanlife.test" },
     update: {},
@@ -41,6 +46,7 @@ async function main() {
     },
   });
 
+  // Modelos camper iniciales que alimentan el catalogo publico.
   const models = [
     {
       slug: "sunlight-cliff-640",
@@ -89,6 +95,7 @@ async function main() {
     },
   ];
 
+  // Inserta o actualiza cada modelo por slug para que el seed sea repetible.
   for (const model of models) {
     await prisma.camperModel.upsert({
       where: { slug: model.slug },
@@ -97,11 +104,13 @@ async function main() {
     });
   }
 
+  // Se toma un modelo concreto para asociarle opiniones iniciales.
   const sunlight = await prisma.camperModel.findUnique({
     where: { slug: "sunlight-cliff-640" },
   });
 
   if (sunlight) {
+    // Primer comentario demo asociado al usuario cliente.
     await prisma.comment.upsert({
       where: { id: "seed-comment-1" },
       update: {},
@@ -115,6 +124,7 @@ async function main() {
       },
     });
 
+    // Segundo comentario demo asociado al usuario editor.
     await prisma.comment.upsert({
       where: { id: "seed-comment-2" },
       update: {},
@@ -129,14 +139,17 @@ async function main() {
     });
   }
 
+  // Salida sencilla para confirmar que se han creado los usuarios esperados.
   console.log({ admin: admin.email, editor: editor.email, user: user.email });
 }
 
 main()
   .catch((error) => {
+    // Si algo falla, se imprime el error y el proceso termina con codigo 1.
     console.error(error);
     process.exit(1);
   })
   .finally(async () => {
+    // Cierra la conexion aunque el seed haya ido bien o mal.
     await prisma.$disconnect();
   });
