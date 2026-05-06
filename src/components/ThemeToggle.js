@@ -4,42 +4,24 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState("dark");
-  const [mounted, setMounted] = useState(false);
+  // Estado inicial compatible con servidor; en cliente se recalcula desde localStorage.
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === "undefined") {
+      return "dark";
+    }
+
+    return localStorage.getItem("vanlife-theme") || "dark";
+  });
 
   useEffect(() => {
-    // Marca que el componente ya está montado en el cliente
-    setMounted(true);
-
-    // Lee el tema guardado
-    const saved = localStorage.getItem("vanlife-theme") || "dark";
-    setTheme(saved);
-
-    // Aplica el tema al html
-    document.documentElement.dataset.theme = saved;
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
+    // Sincroniza el atributo global que activa las variables CSS de claro/oscuro.
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("vanlife-theme", theme);
-  }, [theme, mounted]);
+  }, [theme]);
 
   function toggleTheme() {
-    setTheme(theme === "light" ? "dark" : "light");
-  }
-
-  // Evita renderizar iconos antes de montar → evita hydration mismatch
-  if (!mounted) {
-    return (
-      <button
-        aria-label="Cambiar tema"
-        className="icon-button"
-        type="button"
-      >
-        {/* placeholder sin icono */}
-      </button>
-    );
+    // Alterna entre tema claro y oscuro desde cualquier pagina.
+    setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
   }
 
   return (
@@ -47,6 +29,7 @@ export function ThemeToggle() {
       aria-label="Cambiar tema"
       className="icon-button"
       onClick={toggleTheme}
+      suppressHydrationWarning
       title="Cambiar tema"
       type="button"
     >

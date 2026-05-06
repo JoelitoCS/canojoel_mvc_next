@@ -40,6 +40,11 @@ const modelSchema = z.object({
   features: z.string().trim().min(3),
 });
 
+// Para editar/eliminar se necesita identificar el registro existente.
+const modelIdSchema = z.object({
+  id: z.string().min(1),
+});
+
 function parseDate(value) {
   // Los inputs date envian una cadena vacia cuando no hay fecha; Prisma debe
   // recibir null o Date, nunca una cadena vacia.
@@ -160,4 +165,74 @@ export async function createModel(_previousState, formData) {
   revalidatePath("/");
   revalidatePath("/admin");
   redirect("/admin");
+}
+
+export async function updateModel(_previousState, formData) {
+  // La edicion completa del modelo tambien esta limitada a EDITOR y ADMIN.
+  const session = await auth();
+
+  if (!requireBackofficeRole(session)) {
+    return { ok: false, message: "No tienes permisos para editar modelos." };
+  }
+
+  // Se validan juntos el id y todos los campos editables, incluida la imagen.
+  const parsed = modelSchema.merge(modelIdSchema).safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    return { ok: false, message: parsed.error.issues[0].message };
+  }
+
+  const { id, features, ...modelData } = parsed.data;
+
+  try {
+    // Actualiza todos los campos visibles en catalogo/ficha y transforma features a array.
+    await prisma.camperModel.update({
+      where: { id },
+      data: {
+        ...modelData,
+        features: features
+          .split(",")
+          .map((feature) => feature.trim())
+          .filter(Boolean),
+      },
+    });
+  } catch {
+    return { ok: false, message: "No se ha podido editar el modelo. Revisa que el slug no exista ya." };
+  }
+
+  // Revalida las paginas publicas y el panel para reflejar el cambio.
+  revalidatePath("/");
+  revalidatePath("/cataleg");
+  revalidatePath(`/models/${parsed.data.slug}`);
+  revalidatePath("/admin");
+  return { ok: true, message: "Modelo actualizado correctamente." };
+}
+
+export async function deleteModel(_previousState, formData) {
+  // Borrar modelos es una accion sensible: solo EDITOR y ADMIN.
+  const session = await auth();
+
+  if (!requireBackofficeRole(session)) {
+    return { ok: false, message: "No tienes permisos para eliminar modelos." };
+  }
+
+  const parsed = modelIdSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    return { ok: false, message: "No se ha recibido el modelo a eliminar." };
+  }
+
+  try {
+    // La relacion Comment tiene onDelete: Cascade, asi que los comentarios se eliminan con el modelo.
+    await prisma.camperModel.delete({
+      where: { id: parsed.data.id },
+    });
+  } catch {
+    return { ok: false, message: "No se ha podido eliminar el modelo." };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/cataleg");
+  revalidatePath("/admin");
+  return { ok: true, message: "Modelo eliminado correctamente." };
 }

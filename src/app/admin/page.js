@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ModelEditForm } from "@/components/ModelEditForm";
 import { ModelForm } from "@/components/ModelForm";
 import { getAdminData } from "@/lib/data";
 import { auth } from "../../../auth";
@@ -20,37 +21,64 @@ export default async function AdminPage() {
 
   return (
     <main className="admin-page">
-      <section>
-        <p className="eyebrow">Backoffice</p>
-        <h1>Gestio VanLife</h1>
-        <p>
-          Sessio iniciada com <strong>{session.user.email}</strong> amb rol{" "}
-          <strong>{session.user.role}</strong>.
-        </p>
-      </section>
-
-      <section className="admin-grid">
-        <div className="panel">
-          <h2>Afegir model camper</h2>
-          {/* Formulario protegido que crea CamperModel en PostgreSQL. */}
-          <ModelForm />
+      <section className="admin-hero">
+        <div>
+          <p className="eyebrow">Backoffice</p>
+          <h1>Gestio VanLife</h1>
+          <p>
+            Sessio iniciada com <strong>{session.user.email}</strong> amb rol{" "}
+            <strong>{session.user.role}</strong>.
+          </p>
         </div>
 
-        <div className="panel">
-          <h2>Models persistits</h2>
-          <div className="admin-list">
-            {/* Lista de modelos existentes para comprobar que la persistencia funciona. */}
+        <div className="admin-summary">
+          <span><strong>{models.length}</strong> Models</span>
+          <span><strong>{requests.length}</strong> Sol-licituds</span>
+          <span><strong>{session.user.role}</strong> Rol actiu</span>
+        </div>
+      </section>
+
+      <section className="admin-dashboard">
+        <div className="panel admin-create-panel">
+          <details className="admin-create-disclosure">
+            <summary className="admin-panel-heading admin-panel-heading--summary">
+              <div>
+                <p className="eyebrow">Alta de vehicle</p>
+                <h2>Afegir model camper</h2>
+              </div>
+              <span>Obrir formulari</span>
+            </summary>
+            {/* Formulario protegido que crea CamperModel en PostgreSQL. */}
+            <ModelForm />
+          </details>
+        </div>
+
+        <div className="panel model-editor-panel">
+          <div className="admin-panel-heading">
+            <div>
+              <p className="eyebrow">Cataleg</p>
+              <h2>Editar o eliminar models</h2>
+            </div>
+            <span>{models.length} registres persistits</span>
+          </div>
+
+          <div className="model-editor-list">
+            {/* Cada modelo tiene edicion completa y borrado protegido por rol. */}
             {models.map((model) => (
-              <article key={model.id}>
-                <strong>{model.name}</strong>
-                <span>{model.pricePerDay} € / dia · {model.seats} places</span>
-              </article>
+              <ModelEditForm key={model.id} model={model} />
             ))}
           </div>
         </div>
 
         <div className="panel requests-panel">
-          <h2>Sol-licituds d&apos;informacio</h2>
+          <div className="admin-panel-heading">
+            <div>
+              <p className="eyebrow">Contacte</p>
+              <h2>Sol-licituds d&apos;informacio</h2>
+            </div>
+            <span>{requests.length} entrades</span>
+          </div>
+
           <div className="admin-list">
             {/* Solicitudes enviadas desde el formulario publico de contacto. */}
             {requests.length ? (
