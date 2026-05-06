@@ -1,127 +1,29 @@
 # Prompts utilizados para generar el proyecto VanLife Rentals
 
-## Prompt 1: Analisis inicial del proyecto
+## Prompt 1: Análisis inicial del proyecto
 
-Actua como desarrollador senior full-stack. Analiza este proyecto Next.js existente antes de modificar nada. Revisa la estructura de carpetas, `package.json`, version de Next.js, configuracion de Tailwind, archivos dentro de `src/app`, estado de Git y dependencias instaladas. Despues dime que partes faltan para cumplir este enunciado:
+Quiero que actúes como un desarrollador senior full-stack y que, antes de tocar nada, analices bien el proyecto Next.js que ya existe. Me interesa que revises la estructura de carpetas, el package.json, la versión de Next.js que se está usando, cómo está configurado Tailwind, qué hay dentro de src/app, el estado actual de Git y las dependencias instaladas. Cuando tengas claro cómo está montado todo, dime qué partes faltan para que el proyecto cumpla con lo que necesito: una landing pública con la presentación de la empresa y su propuesta de valor, una sección de modelos de furgonetas camper con datos persistidos, un sistema de comentarios donde los usuarios autenticados puedan publicar y los visitantes solo leer, un formulario de solicitud de información con validación y guardado de datos, todo usando Next.js 16 con App Router, PostgreSQL, Prisma y Auth.js, y con roles mínimos de EDITOR y ADMIN. No empieces a programar hasta que entiendas bien la estructura actual.
 
-- Landing publica con presentacion de empresa y propuesta de valor.
-- Seccion de modelos de furgoneta camper con datos persistidos.
-- Comentarios por modelo: usuarios autenticados pueden publicar, visitantes solo leer.
-- Formulario de solicitud de informacion con validacion y persistencia.
-- Next.js 16 App Router, PostgreSQL, Prisma y Auth.js.
-- Roles minimos `EDITOR` y `ADMIN`.
+## Prompt 2: Implementación completa del stack
 
-No empieces a programar hasta entender la estructura actual.
+Ahora quiero que implementes el proyecto completo usando Next.js 16 con App Router, PostgreSQL, Prisma y Auth.js. Puedes crear, modificar o eliminar los archivos que hagan falta. Usa JavaScript y no TypeScript, porque el proyecto actual ya está en .js. Necesito que prepares todo el esquema de Prisma con los modelos necesarios para usuarios, sesiones, cuentas, modelos de camper, comentarios y solicitudes de información. También quiero que definas roles de usuario como USER, EDITOR y ADMIN, que configures una conexión reutilizable de Prisma, y que integres Auth.js usando Credentials Provider junto con el adaptador de Prisma. Debe existir la ruta de autenticación correspondiente y un sistema de seed con usuarios de prueba y algunos modelos iniciales. Además, quiero que implementes acciones del servidor para login, comentarios, solicitudes y creación de modelos, que valides formularios con Zod, que los comentarios solo los puedan publicar usuarios autenticados y que la ruta /admin esté protegida para EDITOR y ADMIN. Es importante que comentes en el código las partes clave como la conexión a la base de datos, las validaciones, la autenticación, la gestión de roles y la persistencia.
 
-## Prompt 2: Implementacion completa del stack
+## Prompt 3: Diseño según prototipo
 
-Implementa el proyecto completo usando Next.js 16 con App Router, PostgreSQL, Prisma y Auth.js. Puedes crear, editar o eliminar archivos necesarios. Usa JavaScript, no TypeScript, porque el proyecto actual esta en `.js`.
-
-Requisitos tecnicos:
-
-- Crear `prisma/schema.prisma` con modelos para usuarios Auth.js, sesiones, cuentas, modelos camper, comentarios y solicitudes de informacion.
-- Crear roles `USER`, `EDITOR` y `ADMIN`.
-- Crear conexion Prisma reutilizable en `src/lib/prisma.js`.
-- Configurar Auth.js con Credentials Provider y Prisma Adapter.
-- Crear ruta `src/app/api/auth/[...nextauth]/route.js`.
-- Crear seed con usuarios de prueba y modelos camper iniciales.
-- Crear acciones del servidor para login, comentarios, solicitudes de informacion y creacion de modelos.
-- Validar formularios con Zod.
-- Proteger comentarios para que solo usuarios autenticados puedan publicar.
-- Proteger `/admin` para roles `EDITOR` y `ADMIN`.
-
-Comenta en el codigo la logica importante: conexion Prisma, validaciones, autenticacion, roles y persistencia.
-
-## Prompt 3: Diseno segun prototipo
-
-Disena la interfaz para que se parezca mucho al prototipo adjunto de VanLife Rentals.
-
-Estilo visual:
-
-- Landing oscura con hero grande.
-- Imagen de aventura/camper como fondo principal.
-- Logo textual VanLife Rentals.
-- Navegacion superior: Inici, Cataleg, Sobre nosaltres, Contacte.
-- Boton destacado "Reserva ara".
-- Titular grande: "La teva aventura comenca aqui".
-- Paleta oscura con acento turquesa.
-- Tarjetas de modelos destacados.
-- Panel de opiniones de clientes.
-- Panel lateral de reserva/contacto.
-- Franja de ventajas: furgonetas equipadas, recogida, seguro, mejor precio.
-- Diseño responsive para movil y escritorio.
-
-No hagas una landing generica de marketing. La primera pantalla debe sentirse como una web real de alquiler de campers.
+En cuanto al diseño, quiero que la interfaz se parezca lo máximo posible a un prototipo de VanLife Rentals. La idea es una landing con un estilo oscuro, con una sección principal potente tipo hero y una imagen de aventura o de una camper como fondo. El logo debe ser textual con el nombre VanLife Rentals, y arriba debe haber una navegación con opciones como inicio, catálogo, sobre nosotros y contacto, además de un botón destacado para reservar. El titular principal tiene que ser grande y atractivo, algo como “La teva aventura comença aquí”. La paleta debe ser oscura con algún acento en turquesa, y quiero que haya tarjetas con modelos destacados, una sección de opiniones de clientes, algún panel lateral para reserva o contacto y una franja que destaque ventajas como equipamiento, recogida, seguro o precio. Todo debe ser responsive, funcionando bien en móvil y escritorio. No quiero una landing genérica de marketing, sino algo que realmente se sienta como una web real de alquiler de campers desde la primera pantalla.
 
 ## Prompt 4: Rutas y funcionalidades
 
-Crea estas rutas:
-
-- `/`: landing publica con modelos destacados, comentarios recientes y formulario de solicitud.
-- `/models/[slug]`: ficha individual de camper con caracteristicas, precio, comentarios y formulario de comentario si hay sesion.
-- `/login`: formulario de acceso.
-- `/admin`: panel protegido para `EDITOR` y `ADMIN`, con listado de modelos, solicitudes recibidas y formulario para crear modelos.
-
-Los visitantes no autenticados deben poder leer modelos y comentarios, pero no publicar comentarios. Si intentan comentar, deben iniciar sesion.
+También necesito que estructures bien las rutas y funcionalidades principales. La página de inicio debe ser una landing pública donde se vean modelos destacados, comentarios recientes y un formulario de solicitud. Luego debe haber una ruta dinámica para cada modelo de camper donde se muestren sus características, precio, comentarios y un formulario para comentar en caso de que el usuario tenga sesión iniciada. También hace falta una página de login y un panel de administración protegido para usuarios con rol EDITOR o ADMIN, donde se puedan ver los modelos, las solicitudes recibidas y haya un formulario para crear nuevos modelos. Los usuarios no autenticados pueden ver la información y los comentarios, pero no deben poder publicar; si intentan hacerlo, hay que pedirles que inicien sesión.
 
 ## Prompt 5: Datos de prueba
 
-Crea un seed de Prisma con estos usuarios:
-
-- `client@vanlife.test`, rol `USER`.
-- `editor@vanlife.test`, rol `EDITOR`.
-- `admin@vanlife.test`, rol `ADMIN`.
-
-Todos deben tener la contrasena `Password123!` hasheada con bcrypt.
-
-Crea al menos tres campers:
-
-- Sunlight Cliff 640.
-- Volkswagen California.
-- Ford Transit Custom.
-
-Incluye caracteristicas, precio por dia, plazas, camas, descripcion, imagen y comentarios iniciales.
+Quiero que prepares también datos de prueba mediante un seed de Prisma. Necesito tres usuarios: uno con rol USER, otro con rol EDITOR y otro con rol ADMIN, todos con la misma contraseña “Password123!” pero correctamente hasheada con bcrypt. Además, quiero al menos tres modelos de camper, por ejemplo Sunlight Cliff 640, Volkswagen California y Ford Transit Custom, cada uno con sus características, precio por día, número de plazas y camas, descripción, imagen y algunos comentarios iniciales para que la aplicación ya tenga contenido desde el principio.
 
 ## Prompt 6: Variables de entorno y Supabase
 
-Prepara `.env.example` explicando que Prisma necesita una `DATABASE_URL` de PostgreSQL. Si se usa Supabase, debe usarse una connection string que empiece por `postgresql://`, no la URL publica `https://...supabase.co`.
+Respecto a la configuración, prepara un archivo .env.example donde se explique claramente que Prisma necesita una DATABASE_URL de PostgreSQL. Si se usa Supabase, debe quedar claro que hay que usar una connection string que empiece por postgresql:// y no la URL pública de supabase. Incluye un ejemplo completo de variables de entorno y explica en el README que, después de configurar el .env, hay que ejecutar los comandos necesarios para generar Prisma, aplicar migraciones, cargar el seed y arrancar el proyecto en desarrollo.
 
-Incluye ejemplo:
+## Prompt 7: Verificación
 
-```env
-DATABASE_URL="postgresql://postgres.xxxxx:TU_PASSWORD@aws-xxx.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
-NEXT_PUBLIC_SUPABASE_URL="https://tu-proyecto.supabase.co"
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="tu_publishable_key"
-AUTH_SECRET="cambia-este-secreto-en-produccion"
-AUTH_TRUST_HOST=true
-```
-
-Explica en el README que despues de configurar `.env` hay que ejecutar:
-
-```bash
-npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:seed
-npm run dev
-```
-
-## Prompt 7: Verificacion
-
-Verifica que el proyecto funciona.
-
-Ejecuta:
-
-```bash
-npm run prisma:generate
-npm run lint
-npm run build
-```
-
-Si hay errores, corrige el codigo. Si hay warnings aceptables, explicalos. Finalmente arranca el servidor de desarrollo y comprueba que estas rutas responden:
-
-- `/`
-- `/login`
-- `/models/sunlight-cliff-640`
-- `/admin`
-
-Resume los cambios realizados y cualquier paso pendiente para conectar la base de datos real.
+Por último, quiero que verifiques que todo el proyecto funciona correctamente. Ejecuta los comandos de generación de Prisma, linting y build, corrige cualquier error que aparezca y, si hay warnings, explícame cuáles son y por qué son aceptables. Después arranca el servidor de desarrollo y comprueba que las rutas principales responden bien, incluyendo la landing, el login, una página de modelo concreta y el panel de administración. Al final, hazme un resumen de los cambios que has hecho y de cualquier paso que quede pendiente, especialmente lo relacionado con conectar una base de datos real.
