@@ -7,7 +7,7 @@ datasource db {
   // Base de datos PostgreSQL externa; en este proyecto apunta a Supabase.
   provider  = "postgresql"
   // URL usada por la aplicacion para leer y escribir datos.
-  url       = env("DATABASE_URL")
+  url = env("DATABASE_URL")
   // URL usada por Prisma Migrate para aplicar migraciones.
   directUrl = env("DIRECT_URL")
 }
