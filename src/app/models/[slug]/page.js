@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CarFront, ShieldCheck, Star, UsersRound } from "lucide-react";
+import { ArrowLeft, CarFront, ShieldCheck, Star, UsersRound } from "lucide-react";
 import { auth } from "../../../../auth";
 import { CommentForm } from "@/components/CommentForm";
 import { getModelBySlug } from "@/lib/data";
@@ -35,9 +35,14 @@ export default async function ModelDetailPage({ params }) {
       <section className="detail-hero">
         {/* Imagen y resumen principal de la camper. */}
         <img src={model.imageUrl} alt={model.name} />
-        <div>
-          <Link href="/" className="back-link">Tornar al cataleg</Link>
-          <p className="eyebrow">{model.brand}</p>
+        <div className="detail-hero__content">
+          <Link href="/cataleg" className="back-link">
+            <ArrowLeft size={18} />
+            Tornar al cataleg
+          </Link>
+          <div className="detail-brand-row">
+            <p className="eyebrow">{model.brand}</p>
+          </div>
           <h1>{model.name}</h1>
           <p>{model.description}</p>
           <div className="detail-stats">

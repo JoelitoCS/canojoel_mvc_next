@@ -725,6 +725,34 @@ textarea {
   font-weight: 900;
 }
 
+.detail-hero__content {
+  align-self: center;
+}
+
+.back-link {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-raised) 72%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: inline-flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  min-height: 42px;
+  padding: 0 14px;
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.back-link:hover {
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  border-color: color-mix(in srgb, var(--brand) 42%, var(--line));
+  transform: translateX(-3px);
+}
+
+.detail-brand-row {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
 .detail-hero h1,
 .auth-card h1,
 .admin-page h1 {

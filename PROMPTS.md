@@ -27,3 +27,13 @@ Respecto a la configuración, prepara un archivo .env.example donde se explique 
 ## Prompt 7: Verificación
 
 Por último, quiero que verifiques que todo el proyecto funciona correctamente. Ejecuta los comandos de generación de Prisma, linting y build, corrige cualquier error que aparezca y, si hay warnings, explícame cuáles son y por qué son aceptables. Después arranca el servidor de desarrollo y comprueba que las rutas principales responden bien, incluyendo la landing, el login, una página de modelo concreta y el panel de administración. Al final, hazme un resumen de los cambios que has hecho y de cualquier paso que quede pendiente, especialmente lo relacionado con conectar una base de datos real.
+
+## Prompt 8: Últimos cambios, CRUD completo
+
+En el mismo proyecto, quiero que me implementes las funciones de editar y eliminar, segun el rol que este asociado a estas acciones, ya sea editor o admin, creo que ambos pueden hacer el crud completo, y la imagen tambien que se pueda modificar de las caravanas.
+
+## Prompt 9: Últimos cambios en CSS
+
+ 1- Mira el css, haz que quede mucho mejor y mas estructurado que como ya lo esta, ya que lo has puesto todo en la columna de la derecha, re organiza el panel de gestion para que no se vea de esa manera y que se vea de una manera mas uniforme y minimalista y facil para el administrador o editor de la pagina.
+
+ 2- En la pagina de detalle de las caravanas, la marca de la caravana y el tornar al cataleg se encuentran juntos, cambialo de forma que se vea claro donde es para volver a ver el cátalogo.

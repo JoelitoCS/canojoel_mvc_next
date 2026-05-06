@@ -74,6 +74,15 @@ export async function loginAction(_previousState, formData) {
   }
 }
 
+// _previousState es el estado anterior que devolvió la acción en la última ejecución.
+
+// Lo usas cuando trabajas con useFormState() en el cliente.
+
+// En este caso no lo necesitamos, pero es un requisito de la firma de la función de acción.
+
+//formdata sirve para el formato que le pondremos a los datos que recibimos del cliente, es decir, el formulario. 
+// Es un formato que se puede convertir fácilmente en un objeto con Object.fromEntries() para validarlo con Zod o manipularlo antes de guardarlo en la base de datos.
+
 export async function createComment(_previousState, formData) {
   // auth() lee la sesion en servidor; sin usuario no se permite publicar.
   const session = await auth();
